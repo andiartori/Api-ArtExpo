@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import environment from "dotenv";
-import jwt from "jsonwebtoken";
+import jwt, { VerifyErrors, JwtPayload } from "jsonwebtoken";
 import { User } from "../models/models";
 
 environment.config();
@@ -26,19 +26,23 @@ export class AuthenticateJwtMiddleware {
 			return; // Ensuring no further code is executed after sending the response
 		}
 
-		jwt.verify(token, JWT_SECRET, (err, decoded) => {
-			if (err) {
-				res.status(401).send({
-					message: "Invalid token",
-					status: res.statusCode,
-				});
-				return; // Ensuring no further code is executed after sending the response
-			} else {
-				// Assuming decoded token is an object with user information
-				req.user = decoded as User;
-				next();
+		jwt.verify(
+			token,
+			JWT_SECRET,
+			(err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+				if (err) {
+					res.status(401).send({
+						message: "Invalid token",
+						status: res.statusCode,
+					});
+					return; // Ensuring no further code is executed after sending the response
+				} else {
+					// Assuming decoded token is an object with user information
+					req.user = decoded as User;
+					next();
+				}
 			}
-		});
+		);
 	}
 
 	authorizeRole(
