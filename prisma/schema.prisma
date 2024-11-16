@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["ArtExpoSchema"]
+}
+
+model Users {
+  user_id       Int             @id @default(autoincrement())
+  username      String
+  email         String          @unique
+  password      String
+  createdAt     DateTime        @default(now())
+  points        Int             @default(0)
+  role          String
+  refresh_token String?
+  access_token  String?
+  referralCodes ReferralCodes[]
+  bookings      Bookings[]
+  reviews       Reviews[]
+
+  @@schema("ArtExpoSchema")
+}
+
+model Events {
+  event_id           Int                 @id @default(autoincrement())
+  event_name         String
+  location           String
+  description        String
+  image              String?
+  created_at         DateTime            @default(now())
+  updated_at         DateTime            @updatedAt
+  event_date         DateTime
+  event_type         String
+  ticket_available   Int
+  price              Float
+  discounted_price   Float               @default(0.0)
+  bookings           Bookings[]
+  referral_discounts ReferralDiscounts[]
+  reviews            Reviews[]
+
+  @@schema("ArtExpoSchema")
+}
+
+model ReferralCodes {
+  referral_id     Int      @id @default(autoincrement())
+  userId          Int
+  referral_code   String?  @unique
+  referral_points Int      @default(50)
+  created_at      DateTime @default(now())
+  count_used      Int      @default(0)
+
+  user Users @relation(fields: [userId], references: [user_id])
+
+  @@schema("ArtExpoSchema")
+}
+
+model Bookings {
+  booking_id   Int        @id @default(autoincrement())
+  userId       Int
+  eventId      Int
+  quantity     Int
+  booking_date DateTime   @default(now())
+  status       String
+  amount       Float
+  payments     Payments[]
+
+  user  Users  @relation(fields: [userId], references: [user_id])
+  event Events @relation(fields: [eventId], references: [event_id])
+
+  @@schema("ArtExpoSchema")
+}
+
+model ReferralDiscounts {
+  discount_id     Int      @id @default(autoincrement())
+  eventId         Int
+  discount_amount Int
+  start_date      DateTime
+  end_date        DateTime
+
+  event Events @relation(fields: [eventId], references: [event_id])
+
+  @@schema("ArtExpoSchema")
+}
+
+model Payments {
+  payment_id     Int       @id @default(autoincrement())
+  bookingId      Int
+  total_amount   Int
+  payment_date   DateTime  @default(now())
+  payment_status String
+  reviews        Reviews[]
+
+  booking Bookings @relation(fields: [bookingId], references: [booking_id])
+
+  @@schema("ArtExpoSchema")
+}
+
+model Reviews {
+  review_id  Int      @id @default(autoincrement())
+  userId     Int
+  eventId    Int
+  paymentId  Int
+  review     String
+  created_at DateTime @default(now())
+  rating     Int
+
+  user    Users    @relation(fields: [userId], references: [user_id])
+  event   Events   @relation(fields: [eventId], references: [event_id])
+  payment Payments @relation(fields: [paymentId], references: [payment_id])
+
+  @@schema("ArtExpoSchema")
+}
