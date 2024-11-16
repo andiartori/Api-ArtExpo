@@ -1,5 +1,4 @@
 import express from "express";
-import featureRouter from "./routers/feature.router";
 import environment from "dotenv";
 import cors from "cors";
 import { ErrorHandlerMiddleware } from "./middlewares/error.handler.middleware";
