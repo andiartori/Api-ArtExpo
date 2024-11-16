@@ -1,11 +1,15 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "main": "app.ts",
+  "main": "src/app.ts",
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "ts-node src/app.ts"
+    "dev": "ts-node src/app.ts",
+    "start:prod" : "node dist/app.js",
+		"prisma:migrate": "npx prisma migrate dev",
+		"prisma:generate": "priema generate",
+		"postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
