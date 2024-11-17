@@ -16,7 +16,7 @@ const errorHandler = new ErrorHandlerMiddleware();
 app.use(express.json());
 app.use(
 	cors({
-		origin: "http://localhost:3000",
+		origin: ["http://localhost:3000", "https://web-art-expo.vercel.app"],
 	})
 );
 
