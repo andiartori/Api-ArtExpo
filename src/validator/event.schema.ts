@@ -15,10 +15,9 @@ export const eventSchema = validate.object({
 	ticket_available: validate
 		.number()
 		.min(10, "Ticket available must be a positive number"),
-	price: validate.number().positive("Price must be positive"),
+	price: validate.number().min(0, "Price must be 0 or positive"), // Allow 0
 	image: validate.string().min(1, "URL is required"),
 });
-
 
 export const eventSchemaForUpdate = validate.object({
 	event_name: validate.string().min(1, "Name is required"),
