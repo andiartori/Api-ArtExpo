@@ -61,6 +61,7 @@ router.get(
 	"/statistics/monthly",
 	authenticateJwt.authenticateJwt.bind(authenticateJwt),
 	authenticateJwt.authorizeRole("admin").bind(authenticateJwt),
+	verifyAdminToken,
 	adminController.getMonthlyStatistics.bind(adminController)
 );
 

@@ -18,6 +18,14 @@ export class AuthService {
 	}
 
 	async register(data: Auth) {
+		// Check if the provided role is "admin"
+		if (data.role.toLowerCase() === "admin") {
+			// Return a message instead of throwing an error
+			return {
+				success: false,
+				message: "Cannot register with admin role.",
+			};
+		}
 		const hashedPassword = await bcrypt.hash(data.password, 10);
 		return this.prisma.users.create({
 			data: {
