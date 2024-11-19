@@ -38,11 +38,18 @@ export class AuthController {
 	async register(req: Request, res: Response) {
 		try {
 			const user: Auth = req.body;
-			await this.authService.register(user);
-			res.status(201).send({
-				message: "Successfully registered",
-				status: res.statusCode,
-			});
+			const response = await this.authService.register(user);
+			if (response.success === false) {
+				res.status(403).send({
+					message: "gk bisa buat admin hehe",
+					status: res.statusCode,
+				});
+			} else {
+				res.status(201).send({
+					message: "Successfully registered",
+					status: res.statusCode,
+				});
+			}
 		} catch (error) {
 			// Cek apakah error.errors ada dan memiliki setidaknya satu elemen
 			const err = error as Error;

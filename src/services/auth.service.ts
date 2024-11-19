@@ -17,25 +17,44 @@ export class AuthService {
 		this.prisma = new PrismaClient();
 	}
 
-	async register(data: Auth) {
-		// Check if the provided role is "admin"
-		if (data.role.toLowerCase() === "admin") {
-			// Return a message instead of throwing an error
-			return {
-				success: false,
-				message: "Cannot register with admin role.",
-			};
-		}
-		const hashedPassword = await bcrypt.hash(data.password, 10);
-		return this.prisma.users.create({
-			data: {
-				username: data.username,
-				email: data.email,
-				password: hashedPassword,
-				role: data.role,
-			},
-		});
-	}
+async register(data: Auth) {
+    // Check if the provided role is "admin"
+    if (data.role.toLowerCase() === "admin") {
+        // Return a message instead of throwing an error
+        return {
+            success: false,
+            message: "Cannot register with admin role.",
+        };
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    try {
+        // Create the user in the database
+        const user = await this.prisma.users.create({
+            data: {
+                username: data.username,
+                email: data.email,
+                password: hashedPassword,
+                role: data.role,
+            },
+        });
+
+        // Return success with the created user data
+        return {
+            success: true,
+            message: "User successfully registered.",
+            user,  // Optionally return the created user (if you need to)
+        };
+    } catch (error) {
+        // Return an error if something goes wrong
+        return {
+            success: false,
+            message: "Error occurred while registering the user.",
+        };
+    }
+}
+
 
 	async login(email: string, password: string) {
 		const user = await this.prisma.users.findUnique({
