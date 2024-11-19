@@ -330,10 +330,7 @@ export class UserService {
 				(booking.event.price - booking.amount) / pointMultiplier;
 
 			// Step 3: Ensure that points are only restored if they were actually used
-			const pointsToRestore =
-				booking.user.points > 0 && originalPointsUsed > 0
-					? originalPointsUsed
-					: 0;
+			const pointsToRestore = originalPointsUsed > 0 ? originalPointsUsed : 0;
 
 			// Step 4: Update the event's ticket availability
 			await tx.events.update({
